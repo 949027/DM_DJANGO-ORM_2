@@ -28,9 +28,11 @@ class Visit(models.Model):
             leaved= 'leaved at ' + str(self.leaved_at) if self.leaved_at else 'not leaved'
         )
 
+
 def get_duration(visit):
     delta_time = datetime.datetime.now(datetime.timezone.utc) - localtime(visit.entered_at)
     return int(delta_time.total_seconds())
+
 
 def format_duration(duration):
     return str(datetime.timedelta(seconds=duration))
