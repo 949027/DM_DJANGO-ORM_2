@@ -6,8 +6,8 @@ import datetime
 
 
 def passcard_info_view(request, passcode):
+    this_passcard_visits = []
     passcard = Passcard.objects.get(passcode=passcode)
-    # Программируем здесь
     for visit in Visit.objects.filter(passcard=passcard):
         suspicious_visit = False
         if visit.leaved_at is None:
@@ -17,21 +17,17 @@ def passcard_info_view(request, passcode):
         format_duration = datacenter.models.format_duration(duration.total_seconds())
         if duration.total_seconds() > 3600:
             suspicious_visit = True
-
-
-
-        this_passcard_visits = [
-            {
+        passcard_visit = {
                 'entered_at': visit.passcard,
                 'duration': format_duration,
-                'is_strange': suspicious_visit
-            },
-        ]
-        context = {
-            'passcard': passcard,
-            'this_passcard_visits': this_passcard_visits
+                'is_strange': suspicious_visit,
         }
-        return render(request, 'passcard_info.html', context)
+        this_passcard_visits.append(passcard_visit)
+    context = {
+        'passcard': passcard,
+        'this_passcard_visits': this_passcard_visits
+    }
+    return render(request, 'passcard_info.html', context)
 
 
 
