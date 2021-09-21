@@ -2,23 +2,17 @@ from datacenter.models import Passcard
 from datacenter.models import Visit
 from django.shortcuts import render
 import datacenter.models
-import datetime
 
 
 def passcard_info_view(request, passcode):
     this_passcard_visits = []
     passcard = Passcard.objects.get(passcode=passcode)
     for visit in Visit.objects.filter(passcard=passcard):
-        suspicious_visit = False
-        if visit.leaved_at is None:
-            duration = datetime.datetime.now() - visit.entered_at
-        else:
-            duration = visit.leaved_at - visit.entered_at
-        format_duration = datacenter.models.format_duration(duration.total_seconds())
-        if duration.total_seconds() > 3600:
-            suspicious_visit = True
+        duration = datacenter.models.get_duration(visit)
+        format_duration = datacenter.models.format_duration(duration)
+        suspicious_visit = duration > 3600
         passcard_visit = {
-                'entered_at': visit.passcard,
+                'entered_at': visit.entered_at,
                 'duration': format_duration,
                 'is_strange': suspicious_visit,
         }
